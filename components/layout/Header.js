@@ -30,7 +30,7 @@ const Logo = styled.p`
 `;
 
 const Header = () => {
-    const user = true;
+    const user = false;
 
     return (
         <header
@@ -74,12 +74,12 @@ const Header = () => {
                             >Log Out</Button>
                         </>
                     :   <>
-                            <Link href="/">
+                            <Link href="/login">
                             <Button
                                 bgColor="true"
                             >Login</Button>
                             </Link>
-                            <Link href="/">
+                            <Link href="/register">
                                 <Button>Register</Button>
                             </Link>
                         </>
