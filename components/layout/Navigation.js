@@ -21,8 +21,8 @@ const Navigation = () => {
     return (
         <Nav>
             <Link href="/">Home</Link>
-            <Link href="/">Trending</Link>
-            <Link href="/">New Product</Link>
+            <Link href="/trending">Trending</Link>
+            <Link href="/new-product">New Product</Link>
         </Nav>
     );
 }
