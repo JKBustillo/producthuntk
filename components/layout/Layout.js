@@ -32,7 +32,7 @@ const Layout = props => {
                         line-height: 1.5;
                     }
                     h1, h2 {
-                        font-family: 'Roboto Slap', serif;
+                        font-family: 'Roboto Slab', serif;
                         font-weight: 700;
                     }
                     h3 {
