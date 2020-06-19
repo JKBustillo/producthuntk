@@ -3,7 +3,30 @@ import { css } from '@emotion/core';
 import Layout from '../components/layout/Layout';
 import { Form, Field, InputSubmit } from '../components/ui/Form';
 
+import useValidation from '../hooks/useValidation';
+import registerValidation from '../validations/registerValidation';
+
+const INITIAL_STATE = {
+  name: '',
+  email: '',
+  password: ''
+};
+
 const Register = () => {
+  const {
+    values, 
+    errors,
+    submitForm,
+    handleChange,
+    handleSubmit
+  } = useValidation(INITIAL_STATE, registerValidation, createAccount);
+
+  const { name, email, password } = values;
+
+  function createAccount () {
+    console.log('Register');
+  }
+
   return (
     <div>
       <Layout>
@@ -12,14 +35,16 @@ const Register = () => {
             text-align: center;
             margin-top: 5rem;
           `}>Create an account</h1>
-          <Form>
+          <Form onSubmit={handleSubmit} noValidate>
             <Field>
               <label htmlFor="name">Name</label>
               <input
                 type="text"
                 name="name"
                 id="name"
-                placeholder="Your nombre"
+                placeholder="Your name"
+                value={name}
+                onChange={handleChange}
               />
             </Field>
             <Field>
@@ -29,6 +54,8 @@ const Register = () => {
                 name="email"
                 id="email"
                 placeholder="Your email"
+                value={email}
+                onChange={handleChange}
               />
             </Field>
             <Field>
@@ -38,6 +65,8 @@ const Register = () => {
                 name="password"
                 id="password"
                 placeholder="Your password"
+                value={password}
+                onChange={handleChange}
               />
             </Field>
             <InputSubmit type="submit" value="Create account"/>
