@@ -3,6 +3,8 @@ import { css } from '@emotion/core';
 import Layout from '../components/layout/Layout';
 import { Form, Field, InputSubmit, Error } from '../components/ui/Form';
 
+import firebase from '../firebase';
+
 import useValidation from '../hooks/useValidation';
 import registerValidation from '../validations/registerValidation';
 
@@ -22,8 +24,12 @@ const Register = () => {
 
   const { name, email, password } = values;
 
-  function createAccount () {
-    console.log('Register');
+  async function createAccount () {
+    try {
+      await firebase.register(name, email, password);
+    } catch (error) {
+      console.error('Error creating the new user: ', error.message);
+    }
   }
 
   return (
