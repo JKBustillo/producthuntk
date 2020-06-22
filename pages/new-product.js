@@ -1,6 +1,7 @@
 import React, { useState, useContext } from 'react';
 import { css } from '@emotion/core';
 import Router, { useRouter } from 'next/router';
+import FileUploader from 'react-firebase-file-uploader';
 import Layout from '../components/layout/Layout';
 import { Form, Field, InputSubmit, Error } from '../components/ui/Form';
 
@@ -18,6 +19,11 @@ const INITIAL_STATE = {
 };
 
 const NewProduct = () => {
+  const [imageName, setImageName] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [imageUrl, setImageUrl] = useState('');
+
   const [error, setError] = useState(false);
 
   const { user, firebase } = useContext(FirebaseContext);
@@ -34,6 +40,33 @@ const NewProduct = () => {
   // Redirection hook
   const router = useRouter();
 
+  const handleUploadStart = () => {
+    setProgress(0);
+    setUploading(true);
+  };
+
+  const handleUploadError = error => {
+    setUploading(error);
+    console.error(error);
+  };
+
+  const handleUploadSuccess = imageName => {
+    setProgress(100);
+    setUploading(false);
+    setImageName(imageName);
+    firebase
+      .storage
+      .ref('products')
+      .child(imageName)
+      .getDownloadURL()
+      .then(url => {
+        console.log(url);
+        setImageUrl(url);
+      });
+  }
+
+  const handleProgress = progress => setProgress({ progress });
+
   async function createProduct () {
     try {
       if (!user) {
@@ -44,6 +77,7 @@ const NewProduct = () => {
         name,
         enterprise,
         url,
+        imageUrl,
         description,
         votes: 0,
         comments: [],
@@ -51,6 +85,8 @@ const NewProduct = () => {
       };
 
       firebase.db.collection('products').add(product);
+
+      return router.push('/');
     } catch (error) {
       console.error('Error creating the new product: ', error.message);
       setError(error.message);
@@ -98,18 +134,20 @@ const NewProduct = () => {
 
               { errors.enterprise && <Error>{errors.enterprise}</Error> }
 
-              {/* <Field>
+              <Field>
                 <label htmlFor="image">Image</label>
-                <input
-                  type="file"
+                <FileUploader
+                  accept="image/*"
                   name="image"
                   id="image"
-                  value={image}
-                  onChange={handleChange}
+                  randomizeFileName
+                  storageRef={firebase.storage.ref('products')}
+                  onUploadStart={handleUploadStart}
+                  onUploadError={handleUploadError}
+                  onUploadSuccess={handleUploadSuccess}
+                  onProgress={handleProgress}
                 />
               </Field>
-
-              { errors.image && <Error>{errors.image}</Error> } */}
 
               <Field>
                 <label htmlFor="url">Url</label>
