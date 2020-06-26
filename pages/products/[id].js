@@ -8,6 +8,7 @@ import { FirebaseContext } from '../../firebase';
 import Error404 from '../../components/layout/Error404';
 import Layout from '../../components/layout/Layout';
 import { Field, InputSubmit } from '../../components/ui/Form';
+import Button from '../../components/ui/Button';
 
 const ProductContainer = styled.div`
     @media (min-width: 768px) {
@@ -93,7 +94,21 @@ const Product = () => {
                     </div>
 
                     <aside>
-                        12
+                        <Button
+                            target="_blank"
+                            bgColor="true"
+                            href={url}
+                        >Visit URL</Button>
+
+                        <div css={css`
+                            margin-top: 5rem;
+                        `}>
+                            <p css={css`
+                                text-align: center;
+                            `}>{votes} votes</p>
+
+                            <Button>Vote</Button>
+                        </div>
                     </aside>
                 </ProductContainer>
             </div>
