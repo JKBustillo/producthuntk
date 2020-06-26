@@ -47,7 +47,7 @@ const Product = () => {
         return 'Cargando';
     }
 
-    const { comments, created, description, enterprise, imageUrl, name, url, votes } = product;
+    const { comments, created, description, enterprise, imageUrl, name, url, votes, creator } = product;
 
     return (
         <Layout>
@@ -62,6 +62,7 @@ const Product = () => {
                 <ProductContainer>
                     <div>
                         <p>Published {formatDistanceToNow(new Date(created))} ago</p>
+                        { creator && <p>By: {creator.name} from {enterprise}</p> }
 
                         <img src={imageUrl} alt={name} />
 
