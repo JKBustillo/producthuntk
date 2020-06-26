@@ -21,6 +21,7 @@ const ProductContainer = styled.div`
 const Product = () => {
     const [product, setProduct] = useState({});
     const [error, setError] = useState(false);
+    const [comment, setComment] = useState({});
 
     const router = useRouter();
     const { query: { id } } = router;
@@ -68,6 +69,35 @@ const Product = () => {
             ...product,
             votes: newTotal
         });
+    };
+
+    const commentChange = e => {
+        setComment({
+            ...comment,
+            [e.target.name]: e.target.value
+        });
+    };
+
+    const handleSubmit = e => {
+        e.preventDefault();
+
+        if (!user) {
+            return router.push('/');
+        }
+
+        comment.userid = user.uid;
+        comment.username = user.displayName;
+
+        const newComments = [...comments, comment];
+
+        firebase.db.collection('products').doc(id).update({
+            comments: newComments
+        });
+
+        setProduct({
+            ...product,
+            comments: newComments
+        });
     }
 
     return (
@@ -91,17 +121,19 @@ const Product = () => {
 
                         { user &&
                         <>
-                            <h2>Add a comment</h2>
-                            <form>
+                            <h2>Leave a comment</h2>
+                            <form onSubmit={handleSubmit}>
                                 <Field>
                                     <input
                                         type="text"
                                         name="message"
+                                        placeholder="What are your thoughts?"
+                                        onChange={commentChange}
                                     />
                                 </Field>
                                 <InputSubmit
                                     type="submit"
-                                    value="Add comment"
+                                    value="Comment"
                                 />
                             </form>
                         </>}
@@ -110,12 +142,28 @@ const Product = () => {
                             margin: 2rem 0;
                         `}>Comments</h2>
 
-                        {comments.map(comment => (
-                            <li>
-                                <p>{comment.name}</p>
-                                <p>By: {comment.username}</p>
-                            </li>
-                        ))}
+                        {comments.length === 0 ? "No comments yet." :
+                            <ul>
+                                {comments.map((comment, i) => (
+                                    <li
+                                        key={`${comment.userid}-${i}`}
+                                        css={css`
+                                            border: 1px solid #e1e1e1;
+                                            padding: 2rem;
+                                        `}
+                                    > 
+                                        <p>{comment.message}</p>
+                                        <p>By: 
+                                            <span css={css`
+                                                font-weight: bold;
+                                            `}>
+                                                {''} {comment.username}
+                                            </span>
+                                        </p>
+                                    </li>
+                                ))}
+                            </ul>
+                        }
                     </div>
 
                     <aside>
