@@ -49,6 +49,21 @@ const Product = () => {
 
     const { comments, created, description, enterprise, imageUrl, name, url, votes, creator } = product;
 
+    const voteProduct = () => {
+        if (!user) {
+            return router.push('/');
+        }
+
+        const newTotal = votes + 1;
+
+        firebase.db.collection('products').doc(id).update({ votes: newTotal });
+
+        setProduct({
+            ...product,
+            votes: newTotal
+        });
+    }
+
     return (
         <Layout>
             {error && <Error404 /> }
@@ -111,7 +126,7 @@ const Product = () => {
                                 text-align: center;
                             `}>{votes} votes</p>
 
-                            { user && <Button>Vote</Button> }
+                            { user && <Button onClick={voteProduct}>Vote</Button> }
                         </div>
                     </aside>
                 </ProductContainer>
