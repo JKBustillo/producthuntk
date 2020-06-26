@@ -32,6 +32,7 @@ const Product = () => {
     const [product, setProduct] = useState({});
     const [error, setError] = useState(false);
     const [comment, setComment] = useState({});
+    const [consultDB, setConsultDB] = useState(true);
 
     const router = useRouter();
     const { query: { id } } = router;
@@ -39,7 +40,7 @@ const Product = () => {
     const { firebase, user } = useContext(FirebaseContext);
 
     useEffect(() => {
-        if (id) {
+        if (id && consultDB) {
             const getProduct = async () => {
                 const productQuery = await firebase.db.collection('products').doc(id);
                 const product = await productQuery.get();
@@ -48,13 +49,14 @@ const Product = () => {
                 } else {
                     setError(true);
                 }
+                setConsultDB(false);
             }
 
             getProduct();
         }
-    }, [id, product]);
+    }, [id]);
 
-    if (Object.keys(product).length === 0) {
+    if (Object.keys(product).length === 0 && !error) {
         return 'Cargando';
     }
 
@@ -79,6 +81,8 @@ const Product = () => {
             ...product,
             votes: newTotal
         });
+
+        setConsultDB(true);
     };
 
     const commentChange = e => {
@@ -114,95 +118,96 @@ const Product = () => {
             ...product,
             comments: newComments
         });
+
+        setConsultDB(false);
     }
 
     return (
         <Layout>
-            {error && <Error404 /> }
-            
-            <div className="contenedor">
-                <h1 css={css`
-                    text-align: center;
-                    margin-top: 5rem;
-                `}>{name}</h1>
+            {error ? <Error404 /> : 
+                <div className="contenedor">
+                    <h1 css={css`
+                        text-align: center;
+                        margin-top: 5rem;
+                    `}>{name}</h1>
 
-                <ProductContainer>
-                    <div>
-                        <p>Published {formatDistanceToNow(new Date(created))} ago</p>
-                        { creator && <p>By: {creator.name} from {enterprise}</p> }
+                    <ProductContainer>
+                        <div>
+                            <p>Published {formatDistanceToNow(new Date(created))} ago</p>
+                            { creator && <p>By: {creator.name} from {enterprise}</p> }
 
-                        <img src={imageUrl} alt={name} />
+                            <img src={imageUrl} alt={name} />
 
-                        <p>{description}</p>
+                            <p>{description}</p>
 
-                        { user &&
-                        <>
-                            <h2>Leave a comment</h2>
-                            <form onSubmit={handleSubmit}>
-                                <Field>
-                                    <input
-                                        type="text"
-                                        name="message"
-                                        placeholder="What are your thoughts?"
-                                        onChange={commentChange}
+                            { user &&
+                            <>
+                                <h2>Leave a comment</h2>
+                                <form onSubmit={handleSubmit}>
+                                    <Field>
+                                        <input
+                                            type="text"
+                                            name="message"
+                                            placeholder="What are your thoughts?"
+                                            onChange={commentChange}
+                                        />
+                                    </Field>
+                                    <InputSubmit
+                                        type="submit"
+                                        value="Comment"
                                     />
-                                </Field>
-                                <InputSubmit
-                                    type="submit"
-                                    value="Comment"
-                                />
-                            </form>
-                        </>}
+                                </form>
+                            </>}
 
-                        <h2 css={css`
-                            margin: 2rem 0;
-                        `}>Comments</h2>
+                            <h2 css={css`
+                                margin: 2rem 0;
+                            `}>Comments</h2>
 
-                        {comments.length === 0 ? "No comments yet." :
-                            <ul>
-                                {comments.map((comment, i) => (
-                                    <li
-                                        key={`${comment.userid}-${i}`}
-                                        css={css`
-                                            border: 1px solid #e1e1e1;
-                                            padding: 2rem;
-                                        `}
-                                    > 
-                                        <p>{comment.message}</p>
-                                        <p>By: 
-                                            <span css={css`
-                                                font-weight: bold;
-                                            `}>
-                                                {''} {comment.username}
-                                            </span>
-                                        </p>
-                                        { isCreator(comment.userid) && <ProductCreator>Author</ProductCreator> }
-                                    </li>
-                                ))}
-                            </ul>
-                        }
-                    </div>
-
-                    <aside>
-                        <Button
-                            target="_blank"
-                            bgColor="true"
-                            href={url}
-                        >Visit URL</Button>
-
-                        <div css={css`
-                            margin-top: 5rem;
-                        `}>
-                            <p css={css`
-                                text-align: center;
-                            `}>{votes} votes</p>
-
-                            { user && <Button onClick={voteProduct}>Vote</Button> }
+                            {comments.length === 0 ? "No comments yet." :
+                                <ul>
+                                    {comments.map((comment, i) => (
+                                        <li
+                                            key={`${comment.userid}-${i}`}
+                                            css={css`
+                                                border: 1px solid #e1e1e1;
+                                                padding: 2rem;
+                                            `}
+                                        > 
+                                            <p>{comment.message}</p>
+                                            <p>By: 
+                                                <span css={css`
+                                                    font-weight: bold;
+                                                `}>
+                                                    {''} {comment.username}
+                                                </span>
+                                            </p>
+                                            { isCreator(comment.userid) && <ProductCreator>Author</ProductCreator> }
+                                        </li>
+                                    ))}
+                                </ul>
+                            }
                         </div>
-                    </aside>
-                </ProductContainer>
-            </div>
-            
+
+                        <aside>
+                            <Button
+                                target="_blank"
+                                bgColor="true"
+                                href={url}
+                            >Visit URL</Button>
+
+                            <div css={css`
+                                margin-top: 5rem;
+                            `}>
+                                <p css={css`
+                                    text-align: center;
+                                `}>{votes} votes</p>
+
+                                { user && <Button onClick={voteProduct}>Vote</Button> }
+                            </div>
+                        </aside>
+                    </ProductContainer>
+                </div>
+            }
         </Layout>
     );
 }
