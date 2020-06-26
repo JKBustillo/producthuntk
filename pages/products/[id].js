@@ -18,6 +18,16 @@ const ProductContainer = styled.div`
     }
 `;
 
+const ProductCreator = styled.p`
+    padding: .5rem 2rem;
+    background-color: #DA552F;
+    color: #fff;
+    text-transform: uppercase;
+    font-weight: bold;
+    display: inline-block;
+    text-align: center;
+`;
+
 const Product = () => {
     const [product, setProduct] = useState({});
     const [error, setError] = useState(false);
@@ -77,6 +87,12 @@ const Product = () => {
             [e.target.name]: e.target.value
         });
     };
+
+    const isCreator = id => {
+        if (creator.id == id) {
+            return true;
+        }
+    }
 
     const handleSubmit = e => {
         e.preventDefault();
@@ -160,6 +176,7 @@ const Product = () => {
                                                 {''} {comment.username}
                                             </span>
                                         </p>
+                                        { isCreator(comment.userid) && <ProductCreator>Author</ProductCreator> }
                                     </li>
                                 ))}
                             </ul>
