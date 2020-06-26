@@ -103,7 +103,7 @@ const ProductDetails = ({ product }) => {
                     <Comments>
                         <div>
                             <img src="static/img/comment.png" alt="comment"/>
-                            <p>{comments.length} comments</p>
+                            <p>{comments.length} { comments.length == 1 ? 'comment' : 'comments'}</p>
                         </div>
                     </Comments>
 
