@@ -25,7 +25,7 @@ const Product = () => {
     const router = useRouter();
     const { query: { id } } = router;
 
-    const { firebase } = useContext(FirebaseContext);
+    const { firebase, user } = useContext(FirebaseContext);
 
     useEffect(() => {
         if (id) {
@@ -68,19 +68,22 @@ const Product = () => {
 
                         <p>{description}</p>
 
-                        <h2>Add a comment</h2>
-                        <form>
-                            <Field>
-                                <input
-                                    type="text"
-                                    name="message"
+                        { user &&
+                        <>
+                            <h2>Add a comment</h2>
+                            <form>
+                                <Field>
+                                    <input
+                                        type="text"
+                                        name="message"
+                                    />
+                                </Field>
+                                <InputSubmit
+                                    type="submit"
+                                    value="Add comment"
                                 />
-                            </Field>
-                            <InputSubmit
-                                type="submit"
-                                value="Add comment"
-                            />
-                        </form>
+                            </form>
+                        </>}
 
                         <h2 css={css`
                             margin: 2rem 0;
@@ -108,7 +111,7 @@ const Product = () => {
                                 text-align: center;
                             `}>{votes} votes</p>
 
-                            <Button>Vote</Button>
+                            { user && <Button>Vote</Button> }
                         </div>
                     </aside>
                 </ProductContainer>
