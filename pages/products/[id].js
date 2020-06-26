@@ -93,7 +93,7 @@ const Product = () => {
                     </div>
 
                     <aside>
-                        2
+                        12
                     </aside>
                 </ProductContainer>
             </div>
