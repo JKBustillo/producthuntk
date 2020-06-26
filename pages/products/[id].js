@@ -41,13 +41,13 @@ const Product = () => {
 
             getProduct();
         }
-    }, [id]);
+    }, [id, product]);
 
     if (Object.keys(product).length === 0) {
         return 'Cargando';
     }
 
-    const { comments, created, description, enterprise, imageUrl, name, url, votes, creator } = product;
+    const { comments, created, description, enterprise, imageUrl, name, url, votes, creator, hasVoted } = product;
 
     const voteProduct = () => {
         if (!user) {
@@ -56,7 +56,13 @@ const Product = () => {
 
         const newTotal = votes + 1;
 
-        firebase.db.collection('products').doc(id).update({ votes: newTotal });
+        if (hasVoted.includes(user.uid)) {
+            return
+        }
+
+        const newHasVoted = [...hasVoted, user.uid];
+
+        firebase.db.collection('products').doc(id).update({ votes: newTotal, hasVoted: newHasVoted });
 
         setProduct({
             ...product,
