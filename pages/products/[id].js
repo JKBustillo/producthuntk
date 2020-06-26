@@ -122,6 +122,27 @@ const Product = () => {
         setConsultDB(false);
     }
 
+    const canDelete = () => {
+        if (!user) return false;
+
+        if (creator.id === user.uid) {
+            return true;
+        }
+    };
+
+    const deleteProduct = async () => {
+        if (!user|| creator.id !== user.uid) {
+            return router.push('/');
+        }
+        
+        try {
+            await firebase.db.collection('products').doc(id).delete();
+            router.push('/');
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
     return (
         <Layout>
             {error ? <Error404 /> : 
@@ -132,7 +153,9 @@ const Product = () => {
                     `}>{name}</h1>
 
                     <ProductContainer>
-                        <div>
+                        <div css={css`
+                            margin-bottom: 2rem;
+                        `}>
                             <p>Published {formatDistanceToNow(new Date(created))} ago</p>
                             { creator && <p>By: {creator.name} from {enterprise}</p> }
 
@@ -206,6 +229,13 @@ const Product = () => {
                             </div>
                         </aside>
                     </ProductContainer>
+                    { canDelete && 
+                        <Button
+                            onClick={deleteProduct}
+                        >
+                            Delete product
+                        </Button>
+                    }
                 </div>
             }
         </Layout>
