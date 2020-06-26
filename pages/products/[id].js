@@ -1,10 +1,21 @@
 import React, { useEffect, useContext, useState } from 'react';
 import { useRouter } from 'next/router';
 import { css } from '@emotion/core';
+import styled from '@emotion/styled';
+import formatDistanceToNow from 'date-fns/formatDistanceToNow';
 
 import { FirebaseContext } from '../../firebase';
 import Error404 from '../../components/layout/Error404';
 import Layout from '../../components/layout/Layout';
+import { Field, InputSubmit } from '../../components/ui/Form';
+
+const ProductContainer = styled.div`
+    @media (min-width: 768px) {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        column-gap: 2rem;
+    }
+`;
 
 const Product = () => {
     const [product, setProduct] = useState({});
@@ -31,6 +42,12 @@ const Product = () => {
         }
     }, [id]);
 
+    if (Object.keys(product).length === 0) {
+        return 'Cargando';
+    }
+
+    const { comments, created, description, enterprise, imageUrl, name, url, votes } = product;
+
     return (
         <Layout>
             {error && <Error404 /> }
@@ -39,9 +56,46 @@ const Product = () => {
                 <h1 css={css`
                     text-align: center;
                     margin-top: 5rem;
-                `}>
+                `}>{name}</h1>
 
-                </h1>
+                <ProductContainer>
+                    <div>
+                        <p>Published {formatDistanceToNow(new Date(created))} ago</p>
+
+                        <img src={imageUrl} alt={name} />
+
+                        <p>{description}</p>
+
+                        <h2>Add a comment</h2>
+                        <form>
+                            <Field>
+                                <input
+                                    type="text"
+                                    name="message"
+                                />
+                            </Field>
+                            <InputSubmit
+                                type="submit"
+                                value="Add comment"
+                            />
+                        </form>
+
+                        <h2 css={css`
+                            margin: 2rem 0;
+                        `}>Comments</h2>
+
+                        {comments.map(comment => (
+                            <li>
+                                <p>{comment.name}</p>
+                                <p>By: {comment.username}</p>
+                            </li>
+                        ))}
+                    </div>
+
+                    <aside>
+                        2
+                    </aside>
+                </ProductContainer>
             </div>
             
         </Layout>
